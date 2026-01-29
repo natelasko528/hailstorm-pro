@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
-import { Users, TrendingUp, Calendar, DollarSign, CloudRain, MapPin, ArrowRight, ArrowUp, ArrowDown } from 'lucide-react'
+import { Users, Calendar, DollarSign, CloudRain, MapPin, ArrowRight, ArrowUp, ArrowDown } from 'lucide-react'
 import { AreaChart, Area, BarChart, Bar, PieChart, Pie, Cell, ResponsiveContainer, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts'
 import toast from 'react-hot-toast'
 import { stormService } from '../lib/stormService'
