@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Search, Filter, Download, Phone, Mail, MapPin, Star, ChevronDown, X, Check } from 'lucide-react'
+import { Search, Download, Phone, Mail, MapPin, Star } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import toast from 'react-hot-toast'
 import { leadService, type Lead } from '../lib/leadService'
@@ -9,9 +9,8 @@ export default function LeadsPage() {
   const [filteredLeads, setFilteredLeads] = useState<Lead[]>([])
   const [loading, setLoading] = useState(true)
   const [searchQuery, setSearchQuery] = useState('')
-  const [statusFilter, setStatusFilter] = useState<Lead['status'] | 'all'>('all')
-  const [scoreFilter, setScoreFilter] = useState<'all' | 'high' | 'medium' | 'low'>('all')
-  const [showFilters, setShowFilters] = useState(false)
+  const [statussetStatusFilter] = useState<Lead['status'] | 'all'>('all')
+  const [scoresetScoreFilter] = useState<'all' | 'high' | 'medium' | 'low'>('all')
   const [selectedLeads, setSelectedLeads] = useState<Set<string>>(new Set())
   const [sortBy, setSortBy] = useState<'score' | 'date' | 'value'>('score')
 
@@ -21,7 +20,7 @@ export default function LeadsPage() {
 
   useEffect(() => {
     filterAndSortLeads()
-  }, [leads, searchQuery, statusFilter, scoreFilter, sortBy])
+  }, [leads, searchQuery, statusscoresortBy])
 
   const loadLeads = async () => {
     try {
