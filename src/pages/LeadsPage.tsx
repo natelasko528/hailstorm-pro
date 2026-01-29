@@ -9,8 +9,8 @@ export default function LeadsPage() {
   const [filteredLeads, setFilteredLeads] = useState<Lead[]>([])
   const [loading, setLoading] = useState(true)
   const [searchQuery, setSearchQuery] = useState('')
-  const [statussetStatusFilter] = useState<Lead['status'] | 'all'>('all')
-  const [scoresetScoreFilter] = useState<'all' | 'high' | 'medium' | 'low'>('all')
+  const [statusFilter, setStatusFilter] = useState<Lead['status'] | 'all'>('all')
+  const [scoreFilter, setScoreFilter] = useState<'all' | 'high' | 'medium' | 'low'>('all')
   const [selectedLeads, setSelectedLeads] = useState<Set<string>>(new Set())
   const [sortBy, setSortBy] = useState<'score' | 'date' | 'value'>('score')
 
