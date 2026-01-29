@@ -20,7 +20,7 @@ export default function LeadsPage() {
 
   useEffect(() => {
     filterAndSortLeads()
-  }, [leads, searchQuery, statusscoresortBy])
+  }, [leads, searchQuery, statusFilter, scoreFilter, sortBy])
 
   const loadLeads = async () => {
     try {
