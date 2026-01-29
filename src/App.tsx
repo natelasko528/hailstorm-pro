@@ -1,4 +1,5 @@
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
+import { BrowserRouter, Routes, Route } from 'react-router-dom'
+// TODO: Re-enable after testing: import { Navigate } from 'react-router-dom'
 import { Toaster } from 'react-hot-toast'
 import Layout from './components/layout/Layout'
 import LandingPage from './pages/LandingPage'
@@ -8,15 +9,19 @@ import StormsPage from './pages/StormsPage'
 import LeadsPage from './pages/LeadsPage'
 import PropertiesPage from './pages/PropertiesPage'
 import SettingsPage from './pages/SettingsPage'
-import { useAuthStore } from './store/authStore'
+// TODO: Re-enable after testing: import { useAuthStore } from './store/authStore'
 
 interface ProtectedRouteProps {
   children: React.ReactNode
 }
 
+// TODO: Re-enable auth check after testing. Original:
+// function ProtectedRoute({ children }: ProtectedRouteProps) {
+//   const user = useAuthStore((state) => state.user)
+//   return user ? <>{children}</> : <Navigate to="/login" />
+// }
 function ProtectedRoute({ children }: ProtectedRouteProps) {
-  const user = useAuthStore((state) => state.user)
-  return user ? <>{children}</> : <Navigate to="/login" />
+  return <>{children}</>
 }
 
 function App() {
