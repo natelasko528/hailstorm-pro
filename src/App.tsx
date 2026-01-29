@@ -10,7 +10,11 @@ import PropertiesPage from './pages/PropertiesPage'
 import SettingsPage from './pages/SettingsPage'
 import { useAuthStore } from './store/authStore'
 
-function ProtectedRoute({ children }: { children: React.ReactNode }) {
+interface ProtectedRouteProps {
+  children: React.ReactNode
+}
+
+function ProtectedRoute({ children }: ProtectedRouteProps) {
   const user = useAuthStore((state) => state.user)
   return user ? <>{children}</> : <Navigate to="/login" />
 }

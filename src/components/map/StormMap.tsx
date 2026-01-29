@@ -4,7 +4,7 @@ import 'mapbox-gl/dist/mapbox-gl.css'
 import type { Storm } from '../../types/storm'
 import { SEVERITY_COLORS } from '../../types/storm'
 
-mapboxgl.accessToken = import.meta.env.VITE_MAPBOX_TOKEN || ''
+mapboxgl.accessToken = (import.meta.env?.VITE_MAPBOX_TOKEN as string) || ''
 
 interface StormMapProps {
   storms: Storm[]
@@ -30,10 +30,10 @@ export default function StormMap({ storms, onStormSelect, selectedStorm }: Storm
 
     map.current.on('load', () => {
       setMapLoaded(true)
-      
+
       // Add navigation controls
       map.current?.addControl(new mapboxgl.NavigationControl(), 'top-right')
-      
+
       // Add fullscreen control
       map.current?.addControl(new mapboxgl.FullscreenControl(), 'top-right')
     })
@@ -74,7 +74,7 @@ export default function StormMap({ storms, onStormSelect, selectedStorm }: Storm
       el.style.cursor = 'pointer'
       el.style.boxShadow = '0 2px 4px rgba(0,0,0,0.2)'
 
-      const marker = new mapboxgl.Marker(el)
+      new mapboxgl.Marker(el)
         .setLngLat(center)
         .setPopup(
           new mapboxgl.Popup({ offset: 25 }).setHTML(`
@@ -147,7 +147,7 @@ export default function StormMap({ storms, onStormSelect, selectedStorm }: Storm
   return (
     <div className="relative w-full h-full">
       <div ref={mapContainer} className="absolute inset-0" />
-      
+
       {!mapLoaded && (
         <div className="absolute inset-0 flex items-center justify-center bg-gray-100">
           <div className="text-center">

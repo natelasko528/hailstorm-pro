@@ -1,5 +1,5 @@
 import { NavLink } from 'react-router-dom'
-import { CloudRain, LayoutDashboard, Map, Users, Building2, Settings } from 'lucide-react'
+import { CloudRain, LayoutDashboard, Map, Users, Settings } from 'lucide-react'
 
 const navigation = [
   { name: 'Dashboard', to: '/', icon: LayoutDashboard },
