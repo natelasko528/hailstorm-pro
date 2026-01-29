@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { User, Bell, Lock, CreditCard, Mail, MapPin, Building, Save, X } from 'lucide-react'
+import { User, Bell, Lock, CreditCard, Mail, Save } from 'lucide-react'
 import toast from 'react-hot-toast'
 
 export default function SettingsPage() {
