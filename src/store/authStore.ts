@@ -16,12 +16,17 @@ export const useAuthStore = create<AuthState>((set) => ({
   loading: true,
 
   initialize: async () => {
-    const { data: { session } } = await supabase.auth.getSession()
-    set({ user: session?.user ?? null, loading: false })
+    try {
+      const { data: { session } } = await supabase.auth.getSession()
+      set({ user: session?.user ?? null, loading: false })
 
-    supabase.auth.onAuthStateChange((_event, session) => {
-      set({ user: session?.user ?? null })
-    })
+      supabase.auth.onAuthStateChange((_event, session) => {
+        set({ user: session?.user ?? null })
+      })
+    } catch (error) {
+      console.warn('Auth initialization failed (Supabase may not be configured):', error)
+      set({ user: null, loading: false })
+    }
   },
 
   signIn: async (email: string, password: string) => {

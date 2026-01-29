@@ -1,28 +1,27 @@
-import { createClient } from '@supabase/supabase-js'
+import { createClient, SupabaseClient } from '@supabase/supabase-js'
 
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY
 
+let supabase: SupabaseClient
+
 if (!supabaseUrl || !supabaseAnonKey) {
-  console.error('❌ Missing Supabase environment variables!')
-  console.error('Expected: VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY in .env file')
-  console.error('Current values:', {
-    url: supabaseUrl ? 'Found' : 'Missing',
-    key: supabaseAnonKey ? 'Found' : 'Missing'
+  console.warn('Missing Supabase environment variables (VITE_SUPABASE_URL, VITE_SUPABASE_ANON_KEY). Database features will be unavailable.')
+  // Create a placeholder client so the app can still render static pages (landing page, etc.)
+  supabase = createClient('https://placeholder.supabase.co', 'placeholder-key', {
+    auth: {
+      persistSession: false,
+      autoRefreshToken: false,
+    },
   })
-  
-  throw new Error(
-    'Missing Supabase credentials. Please create a .env file with VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY'
-  )
+} else {
+  supabase = createClient(supabaseUrl, supabaseAnonKey, {
+    auth: {
+      persistSession: false,
+      autoRefreshToken: false,
+    },
+  })
+  console.log('Supabase client initialized')
 }
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
-  auth: {
-    persistSession: false, // Disabled for simpler setup
-    autoRefreshToken: false,
-  },
-})
-
-// Test connection on import
-console.log('✓ Supabase client initialized')
-console.log('URL:', supabaseUrl)
+export { supabase }
