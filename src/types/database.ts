@@ -37,17 +37,22 @@ export interface Database {
           created_at?: string
           updated_at?: string
         }
+        Relationships: []
       }
       storms: {
         Row: {
           id: string
           event_id: string | null
-          event_name: string | null
-          event_date: string
+          name: string | null
+          date: string
           state: string
           county: string | null
-          severity: number | null
-          max_hail_size: number | null
+          severity: string | null
+          hail_size: number | null
+          affected_properties: number | null
+          estimated_damage: number | null
+          latitude: number | null
+          longitude: number | null
           geometry: Json | null
           bounds: Json | null
           metadata: Json | null
@@ -57,12 +62,16 @@ export interface Database {
         Insert: {
           id?: string
           event_id?: string | null
-          event_name?: string | null
-          event_date: string
+          name?: string | null
+          date: string
           state: string
           county?: string | null
-          severity?: number | null
-          max_hail_size?: number | null
+          severity?: string | null
+          hail_size?: number | null
+          affected_properties?: number | null
+          estimated_damage?: number | null
+          latitude?: number | null
+          longitude?: number | null
           geometry?: Json | null
           bounds?: Json | null
           metadata?: Json | null
@@ -72,18 +81,89 @@ export interface Database {
         Update: {
           id?: string
           event_id?: string | null
-          event_name?: string | null
-          event_date?: string
+          name?: string | null
+          date?: string
           state?: string
           county?: string | null
-          severity?: number | null
-          max_hail_size?: number | null
+          severity?: string | null
+          hail_size?: number | null
+          affected_properties?: number | null
+          estimated_damage?: number | null
+          latitude?: number | null
+          longitude?: number | null
           geometry?: Json | null
           bounds?: Json | null
           metadata?: Json | null
           created_at?: string
           updated_at?: string
         }
+        Relationships: []
+      }
+      leads: {
+        Row: {
+          id: string
+          storm_id: string | null
+          owner_name: string
+          address: string
+          city: string
+          state: string
+          zip: string
+          phone: string | null
+          email: string | null
+          latitude: number | null
+          longitude: number | null
+          lead_score: number
+          status: string
+          damage_severity: string | null
+          roof_age: number | null
+          property_value: number | null
+          notes: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          storm_id?: string | null
+          owner_name: string
+          address: string
+          city: string
+          state: string
+          zip: string
+          phone?: string | null
+          email?: string | null
+          latitude?: number | null
+          longitude?: number | null
+          lead_score?: number
+          status?: string
+          damage_severity?: string | null
+          roof_age?: number | null
+          property_value?: number | null
+          notes?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          storm_id?: string | null
+          owner_name?: string
+          address?: string
+          city?: string
+          state?: string
+          zip?: string
+          phone?: string | null
+          email?: string | null
+          latitude?: number | null
+          longitude?: number | null
+          lead_score?: number
+          status?: string
+          damage_severity?: string | null
+          roof_age?: number | null
+          property_value?: number | null
+          notes?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: []
       }
       properties: {
         Row: {
@@ -173,7 +253,17 @@ export interface Database {
           created_at?: string
           updated_at?: string
         }
+        Relationships: []
       }
+    }
+    Views: {
+      [_ in never]: never
+    }
+    Functions: {
+      [_ in never]: never
+    }
+    Enums: {
+      [_ in never]: never
     }
   }
 }

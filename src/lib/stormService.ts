@@ -44,7 +44,7 @@ export const stormService = {
       throw error
     }
 
-    return data as Storm[]
+    return data as unknown as Storm[]
   },
 
   /**
@@ -62,7 +62,7 @@ export const stormService = {
       throw error
     }
 
-    return data as Storm
+    return data as unknown as Storm
   },
 
   /**
@@ -88,7 +88,7 @@ export const stormService = {
       throw error
     }
 
-    return data as Storm[]
+    return data as unknown as Storm[]
   },
 
   /**
@@ -107,7 +107,7 @@ export const stormService = {
       throw error
     }
 
-    return data as Storm[]
+    return data as unknown as Storm[]
   },
 
   /**
