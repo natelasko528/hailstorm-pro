@@ -69,7 +69,7 @@ export default function StormMap({ storms, onStormSelect, selectedStorm }: Storm
       el.style.width = '30px'
       el.style.height = '30px'
       el.style.borderRadius = '50%'
-      el.style.backgroundColor = SEVERITY_COLORS[storm.severity]
+      el.style.backgroundColor = SEVERITY_COLORS[storm.severity || 'mild'] || '#fef3c7'
       el.style.border = '3px solid white'
       el.style.cursor = 'pointer'
       el.style.boxShadow = '0 2px 4px rgba(0,0,0,0.2)'
@@ -80,8 +80,8 @@ export default function StormMap({ storms, onStormSelect, selectedStorm }: Storm
           new mapboxgl.Popup({ offset: 25 }).setHTML(`
             <div class="p-2">
               <h3 class="font-bold">${storm.county || storm.state}</h3>
-              <p class="text-sm">${storm.event_date}</p>
-              <p class="text-sm">Hail: ${storm.max_hail_size || 'N/A'}"</p>
+              <p class="text-sm">${storm.date}</p>
+              <p class="text-sm">Hail: ${storm.hail_size || 'N/A'}"</p>
             </div>
           `)
         )
@@ -119,7 +119,7 @@ export default function StormMap({ storms, onStormSelect, selectedStorm }: Storm
         type: 'fill',
         source: 'selected-storm',
         paint: {
-          'fill-color': SEVERITY_COLORS[selectedStorm.severity],
+          'fill-color': SEVERITY_COLORS[selectedStorm.severity || 'mild'] || '#fef3c7',
           'fill-opacity': 0.3
         }
       })
@@ -129,7 +129,7 @@ export default function StormMap({ storms, onStormSelect, selectedStorm }: Storm
         type: 'line',
         source: 'selected-storm',
         paint: {
-          'line-color': SEVERITY_COLORS[selectedStorm.severity],
+          'line-color': SEVERITY_COLORS[selectedStorm.severity || 'mild'] || '#fef3c7',
           'line-width': 3
         }
       })
@@ -162,10 +162,10 @@ export default function StormMap({ storms, onStormSelect, selectedStorm }: Storm
         <h4 className="font-semibold text-sm mb-3">Storm Severity</h4>
         <div className="space-y-2">
           {[
-            { level: 1, label: 'Light', color: SEVERITY_COLORS[1] },
-            { level: 2, label: 'Moderate', color: SEVERITY_COLORS[2] },
-            { level: 3, label: 'Severe', color: SEVERITY_COLORS[3] },
-            { level: 4, label: 'Extreme', color: SEVERITY_COLORS[4] },
+            { level: 'mild', label: 'Light', color: SEVERITY_COLORS['mild'] },
+            { level: 'moderate', label: 'Moderate', color: SEVERITY_COLORS['moderate'] },
+            { level: 'severe', label: 'Severe', color: SEVERITY_COLORS['severe'] },
+            { level: 'extreme', label: 'Extreme', color: SEVERITY_COLORS['extreme'] },
           ].map((item) => (
             <div key={item.level} className="flex items-center gap-2">
               <div

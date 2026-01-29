@@ -49,22 +49,20 @@ function App() {
         <Route path="/" element={<LandingPage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route
-          path="/app/*"
+          path="/app"
           element={
             <ProtectedRoute>
-              <Layout>
-                <Routes>
-                  <Route path="/" element={<Dashboard />} />
-                  <Route path="/storms" element={<StormsPage />} />
-                  <Route path="/leads" element={<LeadsPage />} />
-                  <Route path="/properties" element={<PropertiesPage />} />
-                  <Route path="/properties/:id" element={<PropertiesPage />} />
-                  <Route path="/settings" element={<SettingsPage />} />
-                </Routes>
-              </Layout>
+              <Layout />
             </ProtectedRoute>
           }
-        />
+        >
+          <Route index element={<Dashboard />} />
+          <Route path="storms" element={<StormsPage />} />
+          <Route path="leads" element={<LeadsPage />} />
+          <Route path="properties" element={<PropertiesPage />} />
+          <Route path="properties/:id" element={<PropertiesPage />} />
+          <Route path="settings" element={<SettingsPage />} />
+        </Route>
       </Routes>
     </BrowserRouter>
   )
