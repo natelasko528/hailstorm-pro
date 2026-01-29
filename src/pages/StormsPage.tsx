@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import StormMap from '../components/map/StormMap'
 import { Storm } from '../types/storm'
-import { Filter, Calendar, MapPin, Search, X, SlidersHorizontal, Download, RefreshCw } from 'lucide-react'
+import { Filter, Calendar, MapPin, Search, SlidersHorizontal, Download, RefreshCw } from 'lucide-react'
 import toast from 'react-hot-toast'
 import { stormService } from '../lib/stormService'
 
