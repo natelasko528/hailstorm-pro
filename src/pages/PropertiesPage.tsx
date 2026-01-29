@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
-import { ArrowLeft, MapPin, Home, Calendar, DollarSign, Ruler, Phone, Mail, MessageSquare, Star, Download, ExternalLink, CheckCircle, AlertCircle } from 'lucide-react'
+import { ArrowLeft, MapPin, DollarSign, Phone, Mail, MessageSquare, Star, Download, ExternalLink, CheckCircle, AlertCircle } from 'lucide-react'
 import toast from 'react-hot-toast'
 
 export default function PropertiesPage() {
