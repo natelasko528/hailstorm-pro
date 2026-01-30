@@ -21,8 +21,8 @@ export default function LandingPage() {
               <a href="#features" className="text-gray-300 hover:text-white transition">Features</a>
               <a href="#how-it-works" className="text-gray-300 hover:text-white transition">How It Works</a>
               <a href="#pricing" className="text-gray-300 hover:text-white transition">Pricing</a>
-              <Link to="/login" className="text-gray-300 hover:text-white transition">Sign In</Link>
-              <Link to="/login" className="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-semibold transition">
+              <Link to="/app" className="text-gray-300 hover:text-white transition">Sign In</Link>
+              <Link to="/app" className="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-semibold transition">
                 Start Free Trial
               </Link>
             </div>
@@ -44,8 +44,8 @@ export default function LandingPage() {
               <a href="#features" className="block text-gray-300 hover:text-white transition">Features</a>
               <a href="#how-it-works" className="block text-gray-300 hover:text-white transition">How It Works</a>
               <a href="#pricing" className="block text-gray-300 hover:text-white transition">Pricing</a>
-              <Link to="/login" className="block text-gray-300 hover:text-white transition">Sign In</Link>
-              <Link to="/login" className="block px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-semibold text-center transition">
+              <Link to="/app" className="block text-gray-300 hover:text-white transition">Sign In</Link>
+              <Link to="/app" className="block px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-semibold text-center transition">
                 Start Free Trial
               </Link>
             </div>
@@ -75,7 +75,7 @@ export default function LandingPage() {
             
             <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
               <Link 
-                to="/login" 
+                to="/app" 
                 className="px-8 py-4 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-semibold text-lg transition inline-flex items-center justify-center gap-2 group"
               >
                 Start Free Trial
@@ -329,7 +329,7 @@ export default function LandingPage() {
                 </ul>
 
                 <Link
-                  to="/login"
+                  to="/app"
                   className={`block w-full py-3 rounded-lg font-semibold text-center transition ${
                     plan.highlighted
                       ? 'bg-white text-blue-600 hover:bg-gray-100'
@@ -416,7 +416,7 @@ export default function LandingPage() {
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link 
-              to="/login" 
+              to="/app" 
               className="px-8 py-4 bg-white text-blue-600 rounded-lg font-semibold text-lg hover:bg-gray-100 transition inline-flex items-center justify-center gap-2 group"
             >
               Start Your Free Trial
