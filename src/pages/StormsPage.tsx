@@ -13,7 +13,8 @@ import { leadService } from '../lib/leadService'
 import { propertyService } from '../lib/propertyService'
 import { profileService, DEFAULT_TARGET_STATE } from '../lib/profileService'
 import { useViewModeStore } from '../store/viewModeStore'
-import type { SkipTraceResult } from '../lib/skipTraceService'
+import type { SkipTraceResult, SkipTraceRequest } from '../lib/skipTraceService'
+import { batchSkipTrace, isSkipTraceConfigured } from '../lib/skipTraceService'
 
 export default function StormsPage() {
   // View mode store
@@ -47,6 +48,8 @@ export default function StormsPage() {
   const [selectedProperty, setSelectedProperty] = useState<PropertyMarker | null>(null)
   const [isAddingLead, setIsAddingLead] = useState(false)
   const [isBulkActionLoading, setIsBulkActionLoading] = useState(false)
+  const [isBulkSkipTracing, setIsBulkSkipTracing] = useState(false)
+  const [showSkipTraceConfirm, setShowSkipTraceConfirm] = useState(false)
   
   // UI State
   const [loading, setLoading] = useState(true)
@@ -439,10 +442,99 @@ export default function StormsPage() {
     }
   }, [selectedProperties, selectedStormPath, selectedStorm, markPropertiesAsLeads, clearPropertySelection])
 
-  // Bulk skip trace placeholder
+  // Properties eligible for bulk skip trace (non-leads only)
+  const skipTraceEligible = useMemo(() => {
+    return selectedProperties.filter(p => !p.isLead)
+  }, [selectedProperties])
+
+  // Bulk skip trace - show confirmation dialog
   const handleBulkSkipTrace = useCallback(() => {
-    toast('Skip trace for multiple properties coming soon!', { icon: '📞' })
-  }, [])
+    if (!isSkipTraceConfigured()) {
+      toast.error('Skip trace is not configured. Set VITE_BATCHDATA_API_KEY in your .env file.')
+      return
+    }
+
+    if (skipTraceEligible.length === 0) {
+      toast.error('No eligible properties selected. Properties already marked as leads are excluded.')
+      return
+    }
+
+    setShowSkipTraceConfirm(true)
+  }, [skipTraceEligible])
+
+  // Execute bulk skip trace after confirmation
+  const executeBulkSkipTrace = useCallback(async () => {
+    setShowSkipTraceConfirm(false)
+    setIsBulkSkipTracing(true)
+
+    const toastId = toast.loading(`Skip tracing ${skipTraceEligible.length} properties...`)
+
+    try {
+      // Build SkipTraceRequest array from selected properties
+      const requests: SkipTraceRequest[] = skipTraceEligible.map(property => {
+        // Parse ownerName into first/last
+        let firstName = ''
+        let lastName = ''
+        if (property.ownerName) {
+          const name = property.ownerName.trim()
+          if (name.includes(',')) {
+            const [last, first] = name.split(',').map(s => s.trim())
+            firstName = first || ''
+            lastName = last || ''
+          } else {
+            const parts = name.split(/\s+/)
+            if (parts.length === 1) {
+              lastName = parts[0]
+            } else {
+              firstName = parts[0]
+              lastName = parts.slice(1).join(' ')
+            }
+          }
+        }
+
+        return {
+          firstName,
+          lastName,
+          address: property.address,
+          city: '',
+          state: 'WI',
+          zip: ''
+        }
+      })
+
+      const result = await batchSkipTrace(requests)
+
+      // Build summary
+      const phonesFound = result.results.filter(r => r.success && r.phones.length > 0).length
+      const emailsFound = result.results.filter(r => r.success && r.emails.length > 0).length
+
+      toast.dismiss(toastId)
+
+      if (result.successCount > 0) {
+        toast.success(
+          `Skip trace complete: ${result.successCount} of ${skipTraceEligible.length} found. ` +
+          `${phonesFound} with phones, ${emailsFound} with emails. ` +
+          `Credits used: ${result.totalCreditsUsed}`,
+          { duration: 6000 }
+        )
+      } else {
+        toast.error(
+          `Skip trace completed but no contact info found for ${skipTraceEligible.length} properties.`,
+          { duration: 5000 }
+        )
+      }
+
+      if (result.failureCount > 0) {
+        console.warn(`Bulk skip trace: ${result.failureCount} failures`, result.results.filter(r => !r.success))
+      }
+    } catch (error) {
+      console.error('Bulk skip trace error:', error)
+      toast.dismiss(toastId)
+      toast.error('Bulk skip trace failed. Please try again.')
+    } finally {
+      setIsBulkSkipTracing(false)
+    }
+  }, [skipTraceEligible])
 
   // Exit lead mode and go back to storms
   const handleBackToStorms = useCallback(() => {
@@ -742,6 +834,74 @@ export default function StormsPage() {
           <div className="bg-white rounded-lg px-6 py-4 shadow-xl flex items-center gap-3">
             <Loader2 className="w-5 h-5 animate-spin text-blue-600" />
             <span className="text-gray-700">Finding storm path data...</span>
+          </div>
+        </div>
+      )}
+
+      {/* Bulk Skip Trace Confirmation Modal */}
+      {showSkipTraceConfirm && (
+        <div className="fixed inset-0 z-[2000] flex items-center justify-center p-4">
+          {/* Backdrop */}
+          <div
+            className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+            onClick={() => setShowSkipTraceConfirm(false)}
+          />
+
+          {/* Modal */}
+          <div className="relative bg-white rounded-xl shadow-2xl w-full max-w-md overflow-hidden">
+            {/* Header */}
+            <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-white">
+              <div>
+                <h2 className="text-lg font-semibold text-gray-900">Confirm Bulk Skip Trace</h2>
+                <p className="text-sm text-gray-500">
+                  Look up contact information for selected properties
+                </p>
+              </div>
+              <button
+                onClick={() => setShowSkipTraceConfirm(false)}
+                className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+              >
+                <X className="w-5 h-5 text-gray-500" />
+              </button>
+            </div>
+
+            {/* Body */}
+            <div className="px-6 py-5">
+              <div className="space-y-3">
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-gray-600">Properties to trace</span>
+                  <span className="text-sm font-semibold text-gray-900">{skipTraceEligible.length}</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-gray-600">Estimated credits</span>
+                  <span className="text-sm font-semibold text-gray-900">{skipTraceEligible.length} credits</span>
+                </div>
+              </div>
+              <div className="mt-4 p-3 bg-amber-50 border border-amber-200 rounded-lg">
+                <p className="text-xs text-amber-800">
+                  Each skip trace uses 1 API credit. This action will look up phone numbers and emails
+                  for {skipTraceEligible.length} properties. Results will be displayed but leads will not
+                  be created automatically.
+                </p>
+              </div>
+            </div>
+
+            {/* Footer */}
+            <div className="px-6 py-4 bg-gray-50 border-t border-gray-200 flex items-center justify-end gap-3">
+              <button
+                onClick={() => setShowSkipTraceConfirm(false)}
+                className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={executeBulkSkipTrace}
+                disabled={isBulkSkipTracing}
+                className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50"
+              >
+                {isBulkSkipTracing ? 'Processing...' : `Skip Trace ${skipTraceEligible.length} Properties`}
+              </button>
+            </div>
           </div>
         </div>
       )}

@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { Users, Calendar, DollarSign, CloudRain, MapPin, ArrowRight, ArrowUp, ArrowDown } from 'lucide-react'
 import toast from 'react-hot-toast'
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, AreaChart, Area } from 'recharts'
 import { stormService } from '../lib/stormService'
 import { leadService } from '../lib/leadService'
 
@@ -15,6 +16,8 @@ export default function Dashboard() {
     revenue: 0
   })
   const [recentActivity, setRecentActivity] = useState<any[]>([])
+  const [leadsByStatus, setLeadsByStatus] = useState<Record<string, number>>({})
+  const [stormsByMonth, setStormsByMonth] = useState<{ month: string; count: number }[]>([])
 
   useEffect(() => {
     loadDashboardData()
@@ -65,6 +68,28 @@ export default function Dashboard() {
           icon: CloudRain
         })
       })
+
+      // Aggregate leads by status
+      const allLeads = await leadService.getLeads({ limit: 1000 })
+      const statusCounts: Record<string, number> = {}
+      allLeads.forEach((lead: any) => {
+        const status = lead.status || 'new'
+        statusCounts[status] = (statusCounts[status] || 0) + 1
+      })
+      setLeadsByStatus(statusCounts)
+
+      // Aggregate storms by month
+      const monthCounts: Record<string, number> = {}
+      const allStorms = await stormService.getStorms({ limit: 1000 })
+      allStorms.forEach((storm: any) => {
+        const date = new Date(storm.date)
+        const monthKey = date.toLocaleDateString('en-US', { year: 'numeric', month: 'short' })
+        monthCounts[monthKey] = (monthCounts[monthKey] || 0) + 1
+      })
+      const sortedMonths = Object.entries(monthCounts)
+        .map(([month, count]) => ({ month, count }))
+        .sort((a, b) => new Date(a.month).getTime() - new Date(b.month).getTime())
+      setStormsByMonth(sortedMonths)
 
       setRecentActivity(activities.slice(0, 8))
       setLoading(false)
@@ -182,6 +207,48 @@ export default function Dashboard() {
             </div>
           )
         })}
+      </div>
+
+      {/* Analytics Charts */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Lead Pipeline Chart */}
+        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+          <h2 className="text-xl font-bold text-gray-900 mb-4">Lead Pipeline</h2>
+          <ResponsiveContainer width="100%" height={300}>
+            <BarChart
+              layout="vertical"
+              data={[
+                { status: 'New', count: leadsByStatus['new'] || 0, fill: '#3B82F6' },
+                { status: 'Contacted', count: leadsByStatus['contacted'] || 0, fill: '#8B5CF6' },
+                { status: 'Qualified', count: leadsByStatus['qualified'] || 0, fill: '#F59E0B' },
+                { status: 'Appointment', count: leadsByStatus['appointment'] || 0, fill: '#10B981' },
+                { status: 'Won', count: leadsByStatus['won'] || 0, fill: '#22C55E' },
+                { status: 'Lost', count: leadsByStatus['lost'] || 0, fill: '#EF4444' },
+              ]}
+              margin={{ top: 5, right: 30, left: 40, bottom: 5 }}
+            >
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis type="number" />
+              <YAxis dataKey="status" type="category" width={90} />
+              <Tooltip />
+              <Bar dataKey="count" name="Leads" />
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
+
+        {/* Storm Activity Chart */}
+        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+          <h2 className="text-xl font-bold text-gray-900 mb-4">Storm Activity</h2>
+          <ResponsiveContainer width="100%" height={300}>
+            <AreaChart data={stormsByMonth} margin={{ top: 5, right: 30, left: 0, bottom: 5 }}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="month" />
+              <YAxis />
+              <Tooltip />
+              <Area type="monotone" dataKey="count" name="Storms" stroke="#F97316" fill="#FDBA74" fillOpacity={0.6} />
+            </AreaChart>
+          </ResponsiveContainer>
+        </div>
       </div>
 
       {/* Main Content Grid */}
