@@ -22,7 +22,7 @@ export default function SettingsPage() {
   ]
 
   return (
-    <div className="p-6 bg-slate-50 min-h-screen">
+    <div className="p-4 sm:p-6 bg-slate-50 min-h-screen">
       <div className="mb-6">
         <h1 className="text-3xl font-bold text-gray-900">Settings</h1>
         <p className="text-gray-500 mt-1">Manage your account preferences and settings</p>
@@ -310,8 +310,8 @@ export default function SettingsPage() {
                 <h2 className="text-2xl font-bold text-gray-900 mb-6">Billing & Subscription</h2>
                 
                 <div className="space-y-6">
-                  <div className="bg-gradient-to-br from-blue-50 to-purple-50 rounded-xl p-6 border border-blue-100">
-                    <div className="flex items-center justify-between mb-4">
+                  <div className="bg-gradient-to-br from-blue-50 to-purple-50 rounded-xl p-4 sm:p-6 border border-blue-100">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
                       <div>
                         <h3 className="text-lg font-semibold text-gray-900">Professional Plan</h3>
                         <p className="text-gray-600">$249/month</p>
@@ -359,7 +359,7 @@ export default function SettingsPage() {
                         { date: 'Dec 15, 2023', amount: '$249.00', status: 'Paid' },
                         { date: 'Nov 15, 2023', amount: '$249.00', status: 'Paid' },
                       ].map((invoice, idx) => (
-                        <div key={idx} className="flex items-center justify-between p-4 border border-gray-200 rounded-lg">
+                        <div key={idx} className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 border border-gray-200 rounded-lg">
                           <div>
                             <p className="font-medium text-gray-900">{invoice.date}</p>
                             <p className="text-sm text-gray-500">Professional Plan</p>

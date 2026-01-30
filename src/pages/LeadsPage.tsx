@@ -165,12 +165,12 @@ export default function LeadsPage() {
   }
 
   return (
-    <div className="p-6">
+    <div className="p-4 sm:p-6">
       {/* Header */}
       <div className="mb-6">
-        <div className="flex items-center justify-between mb-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">Lead Management</h1>
+            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Lead Management</h1>
             <p className="text-gray-500 mt-1">{filteredLeads.length} leads found</p>
           </div>
           <div className="flex gap-2">
@@ -185,8 +185,8 @@ export default function LeadsPage() {
         </div>
 
         {/* Search and Filters */}
-        <div className="flex gap-2">
-          <div className="flex-1 relative">
+        <div className="space-y-2">
+          <div className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
             <input
               type="text"
@@ -196,38 +196,40 @@ export default function LeadsPage() {
               className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
           </div>
-          <select
-            value={statusFilter}
-            onChange={(e) => setStatusFilter(e.target.value as any)}
-            className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-          >
-            <option value="all">All Status</option>
-            <option value="new">New</option>
-            <option value="contacted">Contacted</option>
-            <option value="qualified">Qualified</option>
-            <option value="appointment">Appointment</option>
-            <option value="won">Won</option>
-            <option value="lost">Lost</option>
-          </select>
-          <select
-            value={scoreFilter}
-            onChange={(e) => setScoreFilter(e.target.value as any)}
-            className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-          >
-            <option value="all">All Scores</option>
-            <option value="high">High (70+)</option>
-            <option value="medium">Medium (40-69)</option>
-            <option value="low">Low (&lt;40)</option>
-          </select>
-          <select
-            value={sortBy}
-            onChange={(e) => setSortBy(e.target.value as any)}
-            className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-          >
-            <option value="score">Sort by Score</option>
-            <option value="date">Sort by Date</option>
-            <option value="value">Sort by Value</option>
-          </select>
+          <div className="flex flex-wrap gap-2">
+            <select
+              value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value as any)}
+              className="flex-1 min-w-[120px] px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-sm"
+            >
+              <option value="all">All Status</option>
+              <option value="new">New</option>
+              <option value="contacted">Contacted</option>
+              <option value="qualified">Qualified</option>
+              <option value="appointment">Appointment</option>
+              <option value="won">Won</option>
+              <option value="lost">Lost</option>
+            </select>
+            <select
+              value={scoreFilter}
+              onChange={(e) => setScoreFilter(e.target.value as any)}
+              className="flex-1 min-w-[120px] px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-sm"
+            >
+              <option value="all">All Scores</option>
+              <option value="high">High (70+)</option>
+              <option value="medium">Medium (40-69)</option>
+              <option value="low">Low (&lt;40)</option>
+            </select>
+            <select
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value as any)}
+              className="flex-1 min-w-[120px] px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-sm"
+            >
+              <option value="score">Sort by Score</option>
+              <option value="date">Sort by Date</option>
+              <option value="value">Sort by Value</option>
+            </select>
+          </div>
         </div>
 
         {/* Bulk Actions */}

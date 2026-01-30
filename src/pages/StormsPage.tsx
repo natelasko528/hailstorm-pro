@@ -111,28 +111,28 @@ export default function StormsPage() {
   }
 
   return (
-    <div className="h-screen flex flex-col">
+    <div className="h-full flex flex-col">
       {/* Header */}
       <div className="bg-white border-b border-gray-200 p-4">
-        <div className="flex items-center justify-between mb-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">Storm Tracker</h1>
+            <h1 className="text-xl sm:text-2xl font-bold text-gray-900">Storm Tracker</h1>
             <p className="text-gray-500 text-sm">{filteredStorms.length} storms found</p>
           </div>
           <div className="flex gap-2">
             <button
               onClick={loadStorms}
-              className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50"
+              className="flex items-center gap-2 px-3 sm:px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50"
             >
               <RefreshCw className="w-4 h-4" />
-              Refresh
+              <span className="hidden sm:inline">Refresh</span>
             </button>
             <button
               onClick={exportStorms}
-              className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700"
+              className="flex items-center gap-2 px-3 sm:px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700"
             >
               <Download className="w-4 h-4" />
-              Export CSV
+              <span className="hidden sm:inline">Export CSV</span>
             </button>
           </div>
         </div>
@@ -143,7 +143,7 @@ export default function StormsPage() {
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
             <input
               type="text"
-              placeholder="Search storms by name, state, or county..."
+              placeholder="Search storms..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
@@ -151,10 +151,10 @@ export default function StormsPage() {
           </div>
           <button
             onClick={() => setShowFilters(!showFilters)}
-            className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50"
+            className="flex items-center gap-2 px-3 sm:px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50"
           >
             <SlidersHorizontal className="w-4 h-4" />
-            Filters
+            <span className="hidden sm:inline">Filters</span>
             {(severityFilter.length > 0 || stateFilter) && (
               <span className="bg-blue-600 text-white text-xs px-2 py-0.5 rounded-full">
                 {severityFilter.length + (stateFilter ? 1 : 0)}
@@ -222,9 +222,9 @@ export default function StormsPage() {
       </div>
 
       {/* Map and Storm List */}
-      <div className="flex-1 flex overflow-hidden">
+      <div className="flex-1 flex flex-col lg:flex-row overflow-hidden">
         {/* Storm List */}
-        <div className="w-96 bg-white border-r border-gray-200 overflow-y-auto">
+        <div className="h-48 sm:h-64 lg:h-auto lg:w-96 bg-white border-b lg:border-b-0 lg:border-r border-gray-200 overflow-y-auto shrink-0">
           <div className="p-4 space-y-2">
             {filteredStorms.map((storm) => (
               <div

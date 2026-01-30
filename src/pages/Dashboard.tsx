@@ -131,11 +131,11 @@ export default function Dashboard() {
   ]
 
   return (
-    <div className="p-6 space-y-6">
+    <div className="p-4 sm:p-6 space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Dashboard</h1>
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Dashboard</h1>
           <p className="text-gray-500 mt-1">Welcome back! Here's what's happening.</p>
         </div>
         <div className="flex gap-2">
@@ -143,13 +143,13 @@ export default function Dashboard() {
             <button
               key={range}
               onClick={() => setTimeRange(range)}
-              className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+              className={`px-3 sm:px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
                 timeRange === range
                   ? 'bg-blue-600 text-white'
                   : 'bg-white text-gray-700 hover:bg-gray-50 border border-gray-300'
               }`}
             >
-              {range === '7d' ? 'Last 7 days' : range === '30d' ? 'Last 30 days' : 'Last 90 days'}
+              {range === '7d' ? '7d' : range === '30d' ? '30d' : '90d'}
             </button>
           ))}
         </div>
@@ -190,7 +190,7 @@ export default function Dashboard() {
         <div className="lg:col-span-2 bg-white rounded-xl shadow-sm border border-gray-200 p-6">
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-xl font-bold text-gray-900">Recent Activity</h2>
-            <Link to="/leads" className="text-blue-600 hover:text-blue-700 text-sm font-medium">
+            <Link to="/app/leads" className="text-blue-600 hover:text-blue-700 text-sm font-medium">
               View all
             </Link>
           </div>
@@ -223,7 +223,7 @@ export default function Dashboard() {
           <h2 className="text-xl font-bold text-gray-900 mb-6">Quick Actions</h2>
           <div className="space-y-3">
             <Link
-              to="/storms"
+              to="/app/storms"
               className="flex items-center justify-between p-4 rounded-lg border border-gray-200 hover:border-blue-600 hover:bg-blue-50 transition-all group"
             >
               <div className="flex items-center gap-3">
@@ -234,7 +234,7 @@ export default function Dashboard() {
             </Link>
             
             <Link
-              to="/leads"
+              to="/app/leads"
               className="flex items-center justify-between p-4 rounded-lg border border-gray-200 hover:border-blue-600 hover:bg-blue-50 transition-all group"
             >
               <div className="flex items-center gap-3">
@@ -245,7 +245,7 @@ export default function Dashboard() {
             </Link>
             
             <Link
-              to="/properties"
+              to="/app/properties"
               className="flex items-center justify-between p-4 rounded-lg border border-gray-200 hover:border-blue-600 hover:bg-blue-50 transition-all group"
             >
               <div className="flex items-center gap-3">

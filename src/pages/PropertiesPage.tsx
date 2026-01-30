@@ -59,7 +59,7 @@ export default function PropertiesPage() {
   }
 
   return (
-    <div className="p-6 bg-slate-50 min-h-screen">
+    <div className="p-4 sm:p-6 bg-slate-50 min-h-screen">
       {/* Back Button */}
       <Link 
         to="/app/leads"
@@ -74,7 +74,7 @@ export default function PropertiesPage() {
         <div className="lg:col-span-2 space-y-6">
           {/* Property Images Gallery */}
           <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-            <div className="relative h-96 bg-gray-900">
+            <div className="relative h-56 sm:h-96 bg-gray-900">
               <img 
                 src={property.images[selectedImage]} 
                 alt="Property view"
@@ -103,7 +103,7 @@ export default function PropertiesPage() {
           <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
             <h2 className="text-2xl font-bold text-gray-900 mb-6">Property Details</h2>
             
-            <div className="grid grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
               <div className="space-y-4">
                 <div>
                   <p className="text-sm text-gray-500 mb-1">Property Type</p>
