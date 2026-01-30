@@ -29,7 +29,6 @@ vi.mock('../../lib/supabase', () => ({
       signInWithOAuth: mockSignInWithOAuth,
     },
   },
-  isSupabaseConfigured: true,
 }))
 
 // Import after mocking
