@@ -1,12 +1,13 @@
 import { create } from 'zustand'
 import { supabase } from '../lib/supabase'
-import type { User } from '@supabase/supabase-js'
+import type { User, Provider } from '@supabase/supabase-js'
 
 interface AuthState {
   user: User | null
   loading: boolean
   signIn: (email: string, password: string) => Promise<void>
   signUp: (email: string, password: string) => Promise<void>
+  signInWithGoogle: () => Promise<void>
   signOut: () => Promise<void>
   initialize: () => Promise<void>
 }
@@ -37,6 +38,32 @@ export const useAuthStore = create<AuthState>((set) => ({
   signUp: async (email: string, password: string) => {
     const { error } = await supabase.auth.signUp({ email, password })
     if (error) throw error
+  },
+
+  signInWithGoogle: async () => {
+    const { data, error } = await supabase.auth.signInWithOAuth({
+      provider: 'google' as Provider,
+      options: {
+        redirectTo: `${window.location.origin}/app`,
+        queryParams: {
+          access_type: 'offline',
+          prompt: 'consent',
+        },
+      },
+    })
+    
+    if (error) {
+      console.error('Google OAuth error:', error)
+      throw error
+    }
+    
+    // Log OAuth URL for debugging (will be null if provider not enabled)
+    if (!data?.url) {
+      console.error('No OAuth URL returned - Google provider may not be enabled in Supabase')
+      throw new Error('Google sign-in is not configured. Please enable Google OAuth in your Supabase dashboard.')
+    }
+    
+    // The browser will redirect to data.url automatically
   },
 
   signOut: async () => {

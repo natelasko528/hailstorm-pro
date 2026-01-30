@@ -60,7 +60,7 @@ export default function Dashboard() {
         activities.push({
           type: 'storm',
           title: storm.name,
-          subtitle: `${storm.affected_properties} properties affected`,
+          subtitle: `${storm.county}, ${storm.state} - ${storm.magnitude || 'N/A'}" hail`,
           time: new Date(storm.date).toLocaleDateString(),
           icon: CloudRain
         })

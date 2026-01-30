@@ -1,48 +1,24 @@
+// Matches properties table (database row)
 export interface Property {
   id: string
-  user_id: string
-  storm_id: string
-  
-  // Location
   address: string
-  city?: string
-  state: string
-  zip_code?: string
-  county?: string
-  coordinates?: {
-    type: 'Point'
-    coordinates: [number, number] // [lng, lat]
-  }
-  
-  // Property details
-  parcel_id?: string
-  property_type?: string
-  year_built?: number
-  square_footage?: number
-  estimated_value?: number
-  roof_age?: number
-  roof_material?: string
-  
-  // Contact information
-  owner_name?: string
-  owner_phone?: string
-  owner_email?: string
-  mailing_address?: string
-  
-  // Lead scoring
-  lead_score?: number
-  score_factors?: Record<string, any>
-  
-  // Status
-  status: PropertyStatus
-  contacted_at?: string
-  appointment_at?: string
-  
+  city: string | null
+  state: string | null
+  zip: string | null
+  county: string | null
+  latitude: number | null
+  longitude: number | null
+  parcel_geometry: GeoJSON.Geometry | Record<string, unknown> | null
+  arcgis_parcel_id: string | null
+  owner_name: string | null
+  owner_phone: string | null
+  owner_email: string | null
+  estimated_value: number | null
   created_at: string
   updated_at: string
 }
 
-export type PropertyStatus = 
+export type PropertyStatus =
   | 'new'
   | 'contacted'
   | 'qualified'
@@ -72,9 +48,7 @@ export const STATUS_COLORS: Record<PropertyStatus, string> = {
 }
 
 export interface PropertyFilters {
-  status?: PropertyStatus[]
-  minScore?: number
-  maxScore?: number
-  propertyType?: string[]
-  hasContact?: boolean
+  state?: string
+  arcgis_parcel_id?: string
+  limit?: number
 }
