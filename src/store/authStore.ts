@@ -1,5 +1,5 @@
 import { create } from 'zustand'
-import { supabase } from '../lib/supabase'
+import { supabase, isSupabaseConfigured } from '../lib/supabase'
 import type { User, Provider } from '@supabase/supabase-js'
 
 interface AuthState {
@@ -31,16 +31,25 @@ export const useAuthStore = create<AuthState>((set) => ({
   },
 
   signIn: async (email: string, password: string) => {
+    if (!isSupabaseConfigured) {
+      throw new Error('Supabase is not configured. Please check your environment variables.')
+    }
     const { error } = await supabase.auth.signInWithPassword({ email, password })
     if (error) throw error
   },
 
   signUp: async (email: string, password: string) => {
+    if (!isSupabaseConfigured) {
+      throw new Error('Supabase is not configured. Please check your environment variables.')
+    }
     const { error } = await supabase.auth.signUp({ email, password })
     if (error) throw error
   },
 
   signInWithGoogle: async () => {
+    if (!isSupabaseConfigured) {
+      throw new Error('Supabase is not configured. Please set VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY environment variables.')
+    }
     const { data, error } = await supabase.auth.signInWithOAuth({
       provider: 'google' as Provider,
       options: {
@@ -51,18 +60,18 @@ export const useAuthStore = create<AuthState>((set) => ({
         },
       },
     })
-    
+
     if (error) {
       console.error('Google OAuth error:', error)
       throw error
     }
-    
+
     // Log OAuth URL for debugging (will be null if provider not enabled)
     if (!data?.url) {
       console.error('No OAuth URL returned - Google provider may not be enabled in Supabase')
       throw new Error('Google sign-in is not configured. Please enable Google OAuth in your Supabase dashboard.')
     }
-    
+
     // The browser will redirect to data.url automatically
   },
 
