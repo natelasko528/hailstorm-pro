@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo, useRef } from 'react'
-import { User, Bell, Lock, CreditCard, Mail, Save, Loader2, CheckCircle, AlertCircle, Check, X, Camera, Upload } from 'lucide-react'
+import { User, Bell, Lock, CreditCard, Mail, Save, Loader2, CheckCircle, AlertCircle, Check, X, Camera, Upload, Zap, Link, Search, ChevronDown, ChevronUp, Star, Building2, Eye, EyeOff } from 'lucide-react'
 import toast from 'react-hot-toast'
 import { profileService, Profile, NotificationPrefs, AVAILABLE_STATES, DEFAULT_TARGET_STATE } from '../lib/profileService'
 import { useAuthStore } from '../store/authStore'
@@ -73,6 +73,24 @@ export default function SettingsPage() {
   const [uploadingAvatar, setUploadingAvatar] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
   
+  // Integration connection state
+  const [integrationConnections, setIntegrationConnections] = useState<Record<string, boolean>>({
+    gohighlevel: false,
+    mailchimp: false,
+    zapier: false,
+    stripe: false,
+    batchdata: false,
+  })
+  const [integrationConfigs, setIntegrationConfigs] = useState<Record<string, { apiKey: string; webhookUrl: string }>>({
+    gohighlevel: { apiKey: '', webhookUrl: '' },
+    mailchimp: { apiKey: '', webhookUrl: '' },
+    zapier: { apiKey: '', webhookUrl: '' },
+    stripe: { apiKey: '', webhookUrl: '' },
+    batchdata: { apiKey: '', webhookUrl: '' },
+  })
+  const [expandedIntegration, setExpandedIntegration] = useState<string | null>(null)
+  const [showApiKey, setShowApiKey] = useState<Record<string, boolean>>({})
+
   // Validation state
   const phoneValid = !phone || PHONE_REGEX.test(phone.replace(/\D/g, '').padStart(10, '0').slice(-10))
   const passwordStrength = useMemo(() => getPasswordStrength(newPassword), [newPassword])
@@ -732,46 +750,180 @@ export default function SettingsPage() {
             {activeTab === 'billing' && (
               <div>
                 <h2 className="text-2xl font-bold text-gray-900 mb-6">Billing & Subscription</h2>
-                
-                <div className="space-y-6">
-                  <div className="bg-gradient-to-br from-blue-50 to-purple-50 rounded-xl p-6 border border-blue-100">
-                    <div className="flex items-center justify-between mb-4">
-                      <div>
-                        <h3 className="text-lg font-semibold text-gray-900">Free Plan</h3>
-                        <p className="text-gray-600">Currently active</p>
-                      </div>
-                      <span className="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm font-medium">
-                        Active
+
+                {/* Plan Comparison */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+                  {/* Free Plan */}
+                  <div className="relative bg-white rounded-xl border-2 border-blue-500 p-6 shadow-sm">
+                    <div className="absolute -top-3 left-4">
+                      <span className="px-3 py-1 bg-blue-600 text-white rounded-full text-xs font-semibold">
+                        Current Plan
                       </span>
                     </div>
-                    <div className="space-y-2 text-sm text-gray-600">
-                      <p className="flex items-center gap-2"><CheckCircle className="w-4 h-4 text-green-600" /> Unlimited storm tracking</p>
-                      <p className="flex items-center gap-2"><CheckCircle className="w-4 h-4 text-green-600" /> Up to 100 leads</p>
-                      <p className="flex items-center gap-2"><CheckCircle className="w-4 h-4 text-green-600" /> Basic reporting</p>
+                    <div className="mt-2 mb-4">
+                      <h3 className="text-lg font-bold text-gray-900">Free</h3>
+                      <div className="mt-2">
+                        <span className="text-3xl font-bold text-gray-900">$0</span>
+                        <span className="text-gray-500 text-sm">/mo</span>
+                      </div>
                     </div>
-                    <div className="mt-4 pt-4 border-t border-blue-200">
-                      <button className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition font-medium">
-                        Upgrade to Pro
-                      </button>
-                    </div>
+                    <ul className="space-y-3 text-sm text-gray-600 mb-6">
+                      <li className="flex items-start gap-2">
+                        <CheckCircle className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
+                        Unlimited storm tracking
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <CheckCircle className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
+                        Up to 100 leads
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <CheckCircle className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
+                        Basic reporting
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <CheckCircle className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
+                        1 state tracking
+                      </li>
+                    </ul>
+                    <button
+                      disabled
+                      className="w-full px-4 py-2.5 bg-gray-100 text-gray-500 rounded-lg font-semibold cursor-not-allowed"
+                    >
+                      Current Plan
+                    </button>
                   </div>
 
-                  <div className="border-b border-gray-200 pb-6">
-                    <h3 className="text-lg font-semibold text-gray-900 mb-4">Payment Method</h3>
-                    
-                    <div className="bg-gray-50 rounded-lg p-4">
-                      <p className="text-gray-600 text-center py-4">
-                        No payment method on file. Add one when upgrading to a paid plan.
-                      </p>
+                  {/* Pro Plan */}
+                  <div className="relative bg-gradient-to-br from-blue-50 to-purple-50 rounded-xl border-2 border-purple-200 p-6 shadow-md">
+                    <div className="absolute -top-3 left-4">
+                      <span className="px-3 py-1 bg-purple-600 text-white rounded-full text-xs font-semibold flex items-center gap-1">
+                        <Star className="w-3 h-3" /> Recommended
+                      </span>
                     </div>
+                    <div className="mt-2 mb-4">
+                      <h3 className="text-lg font-bold text-gray-900">Pro</h3>
+                      <div className="mt-2">
+                        <span className="text-3xl font-bold text-gray-900">$99</span>
+                        <span className="text-gray-500 text-sm">/mo</span>
+                      </div>
+                    </div>
+                    <ul className="space-y-3 text-sm text-gray-600 mb-6">
+                      <li className="flex items-start gap-2">
+                        <CheckCircle className="w-4 h-4 text-purple-500 mt-0.5 flex-shrink-0" />
+                        Unlimited leads
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <CheckCircle className="w-4 h-4 text-purple-500 mt-0.5 flex-shrink-0" />
+                        Advanced analytics
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <CheckCircle className="w-4 h-4 text-purple-500 mt-0.5 flex-shrink-0" />
+                        Skip trace credits (100/mo)
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <CheckCircle className="w-4 h-4 text-purple-500 mt-0.5 flex-shrink-0" />
+                        Multi-state tracking
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <CheckCircle className="w-4 h-4 text-purple-500 mt-0.5 flex-shrink-0" />
+                        Priority support
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <CheckCircle className="w-4 h-4 text-purple-500 mt-0.5 flex-shrink-0" />
+                        API access
+                      </li>
+                    </ul>
+                    <button
+                      onClick={() => toast.success('Upgrade flow coming soon!')}
+                      className="w-full px-4 py-2.5 bg-purple-600 text-white rounded-lg font-semibold hover:bg-purple-700 transition"
+                    >
+                      Upgrade to Pro
+                    </button>
                   </div>
 
-                  <div>
-                    <h3 className="text-lg font-semibold text-gray-900 mb-4">Billing History</h3>
-                    
-                    <div className="text-center py-8 text-gray-500">
-                      <CreditCard className="w-12 h-12 mx-auto mb-3 text-gray-400" />
-                      <p>No billing history yet</p>
+                  {/* Enterprise Plan */}
+                  <div className="relative bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
+                    <div className="absolute -top-3 left-4">
+                      <span className="px-3 py-1 bg-gray-800 text-white rounded-full text-xs font-semibold flex items-center gap-1">
+                        <Building2 className="w-3 h-3" /> Enterprise
+                      </span>
+                    </div>
+                    <div className="mt-2 mb-4">
+                      <h3 className="text-lg font-bold text-gray-900">Enterprise</h3>
+                      <div className="mt-2">
+                        <span className="text-2xl font-bold text-gray-900">Custom</span>
+                      </div>
+                    </div>
+                    <ul className="space-y-3 text-sm text-gray-600 mb-6">
+                      <li className="flex items-start gap-2">
+                        <CheckCircle className="w-4 h-4 text-gray-500 mt-0.5 flex-shrink-0" />
+                        Custom limits
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <CheckCircle className="w-4 h-4 text-gray-500 mt-0.5 flex-shrink-0" />
+                        Dedicated support
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <CheckCircle className="w-4 h-4 text-gray-500 mt-0.5 flex-shrink-0" />
+                        Custom integrations
+                      </li>
+                    </ul>
+                    <button
+                      onClick={() => toast.success('Our sales team will reach out shortly!')}
+                      className="w-full px-4 py-2.5 border-2 border-gray-800 text-gray-800 rounded-lg font-semibold hover:bg-gray-800 hover:text-white transition"
+                    >
+                      Contact Sales
+                    </button>
+                  </div>
+                </div>
+
+                {/* Usage Statistics */}
+                <div className="border-t border-gray-200 pt-6">
+                  <h3 className="text-lg font-semibold text-gray-900 mb-4">Usage Statistics</h3>
+                  <div className="space-y-5">
+                    {/* Leads Used */}
+                    <div>
+                      <div className="flex items-center justify-between mb-1.5">
+                        <span className="text-sm font-medium text-gray-700">Leads Used</span>
+                        <span className="text-sm text-gray-500">42 / 100</span>
+                      </div>
+                      <div className="w-full h-3 bg-gray-200 rounded-full overflow-hidden">
+                        <div
+                          className="h-full bg-blue-500 rounded-full transition-all duration-500"
+                          style={{ width: '42%' }}
+                        />
+                      </div>
+                      <p className="text-xs text-gray-500 mt-1">58 leads remaining this month</p>
+                    </div>
+
+                    {/* Skip Traces */}
+                    <div>
+                      <div className="flex items-center justify-between mb-1.5">
+                        <span className="text-sm font-medium text-gray-700">Skip Traces</span>
+                        <span className="text-sm text-gray-500">0 / 0</span>
+                      </div>
+                      <div className="w-full h-3 bg-gray-200 rounded-full overflow-hidden">
+                        <div
+                          className="h-full bg-purple-500 rounded-full transition-all duration-500"
+                          style={{ width: '0%' }}
+                        />
+                      </div>
+                      <p className="text-xs text-gray-500 mt-1">Upgrade to Pro for 100 skip traces per month</p>
+                    </div>
+
+                    {/* States Tracked */}
+                    <div>
+                      <div className="flex items-center justify-between mb-1.5">
+                        <span className="text-sm font-medium text-gray-700">States Tracked</span>
+                        <span className="text-sm text-gray-500">1 of 1</span>
+                      </div>
+                      <div className="w-full h-3 bg-gray-200 rounded-full overflow-hidden">
+                        <div
+                          className="h-full bg-green-500 rounded-full transition-all duration-500"
+                          style={{ width: '100%' }}
+                        />
+                      </div>
+                      <p className="text-xs text-gray-500 mt-1">Upgrade to Pro for multi-state tracking</p>
                     </div>
                   </div>
                 </div>
@@ -781,37 +933,157 @@ export default function SettingsPage() {
             {/* Integrations Tab */}
             {activeTab === 'integrations' && (
               <div>
-                <h2 className="text-2xl font-bold text-gray-900 mb-6">Integrations</h2>
-                
+                <h2 className="text-2xl font-bold text-gray-900 mb-2">Integrations</h2>
+                <p className="text-gray-500 mb-6">Connect your favorite tools to streamline your workflow</p>
+
                 <div className="space-y-4">
                   {[
-                    { name: 'GoHighLevel', description: 'CRM and marketing automation', connected: false, logo: '🚀' },
-                    { name: 'Mailchimp', description: 'Email marketing platform', connected: false, logo: '📧' },
-                    { name: 'Zapier', description: 'Connect with 3,000+ apps', connected: false, logo: '⚡' },
-                    { name: 'Stripe', description: 'Payment processing', connected: false, logo: '💳' },
-                  ].map((integration, idx) => (
-                    <div key={idx} className="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:border-gray-300 transition">
-                      <div className="flex items-center gap-4">
-                        <div className="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center text-2xl">
-                          {integration.logo}
-                        </div>
-                        <div>
-                          <h4 className="font-semibold text-gray-900">{integration.name}</h4>
-                          <p className="text-sm text-gray-500">{integration.description}</p>
-                        </div>
-                      </div>
-                      <button
-                        className="px-4 py-2 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition"
+                    { id: 'gohighlevel', name: 'GoHighLevel', description: 'CRM and marketing automation', icon: Zap, iconColor: 'text-orange-500', iconBg: 'bg-orange-50' },
+                    { id: 'mailchimp', name: 'Mailchimp', description: 'Email marketing platform', icon: Mail, iconColor: 'text-yellow-600', iconBg: 'bg-yellow-50' },
+                    { id: 'zapier', name: 'Zapier', description: 'Connect with 3,000+ apps', icon: Link, iconColor: 'text-orange-600', iconBg: 'bg-orange-50' },
+                    { id: 'stripe', name: 'Stripe', description: 'Payment processing', icon: CreditCard, iconColor: 'text-purple-600', iconBg: 'bg-purple-50' },
+                    { id: 'batchdata', name: 'BatchData', description: 'Skip tracing and property data enrichment', icon: Search, iconColor: 'text-blue-600', iconBg: 'bg-blue-50' },
+                  ].map((integration) => {
+                    const isConnected = integrationConnections[integration.id]
+                    const isExpanded = expandedIntegration === integration.id
+                    const config = integrationConfigs[integration.id]
+                    const IconComponent = integration.icon
+
+                    return (
+                      <div
+                        key={integration.id}
+                        className={`border rounded-xl transition overflow-hidden ${
+                          isConnected ? 'border-green-200 bg-green-50/30' : 'border-gray-200'
+                        }`}
                       >
-                        Connect
-                      </button>
-                    </div>
-                  ))}
+                        <div className="flex items-center justify-between p-4">
+                          <div className="flex items-center gap-4">
+                            <div className={`w-12 h-12 ${integration.iconBg} rounded-lg flex items-center justify-center`}>
+                              <IconComponent className={`w-6 h-6 ${integration.iconColor}`} />
+                            </div>
+                            <div>
+                              <div className="flex items-center gap-2">
+                                <h4 className="font-semibold text-gray-900">{integration.name}</h4>
+                                <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium ${
+                                  isConnected
+                                    ? 'bg-green-100 text-green-700'
+                                    : 'bg-gray-100 text-gray-500'
+                                }`}>
+                                  <span className={`w-1.5 h-1.5 rounded-full ${isConnected ? 'bg-green-500' : 'bg-gray-400'}`} />
+                                  {isConnected ? 'Connected' : 'Disconnected'}
+                                </span>
+                              </div>
+                              <p className="text-sm text-gray-500">{integration.description}</p>
+                            </div>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            {isConnected && (
+                              <button
+                                onClick={() => setExpandedIntegration(isExpanded ? null : integration.id)}
+                                className="p-2 text-gray-400 hover:text-gray-600 transition"
+                                aria-label={isExpanded ? 'Collapse configuration' : 'Expand configuration'}
+                              >
+                                {isExpanded ? <ChevronUp className="w-5 h-5" /> : <ChevronDown className="w-5 h-5" />}
+                              </button>
+                            )}
+                            <button
+                              onClick={() => {
+                                const newState = !isConnected
+                                setIntegrationConnections(prev => ({ ...prev, [integration.id]: newState }))
+                                if (newState) {
+                                  toast.success(`${integration.name} connected successfully!`)
+                                  setExpandedIntegration(integration.id)
+                                } else {
+                                  toast.success(`${integration.name} disconnected`)
+                                  setExpandedIntegration(null)
+                                  setIntegrationConfigs(prev => ({
+                                    ...prev,
+                                    [integration.id]: { apiKey: '', webhookUrl: '' },
+                                  }))
+                                }
+                              }}
+                              className={`px-4 py-2 rounded-lg font-medium transition text-sm ${
+                                isConnected
+                                  ? 'border border-red-200 text-red-600 hover:bg-red-50'
+                                  : 'bg-blue-600 text-white hover:bg-blue-700'
+                              }`}
+                            >
+                              {isConnected ? 'Disconnect' : 'Connect'}
+                            </button>
+                          </div>
+                        </div>
+
+                        {/* Configuration Section */}
+                        {isConnected && isExpanded && (
+                          <div className="px-4 pb-4 pt-2 border-t border-gray-100">
+                            <div className="bg-white rounded-lg p-4 space-y-4">
+                              <h5 className="text-sm font-semibold text-gray-700">Configuration</h5>
+                              <div>
+                                <label className="block text-sm font-medium text-gray-600 mb-1.5">
+                                  API Key
+                                </label>
+                                <div className="relative">
+                                  <input
+                                    type={showApiKey[integration.id] ? 'text' : 'password'}
+                                    value={config.apiKey}
+                                    onChange={(e) =>
+                                      setIntegrationConfigs(prev => ({
+                                        ...prev,
+                                        [integration.id]: { ...prev[integration.id], apiKey: e.target.value },
+                                      }))
+                                    }
+                                    placeholder={`Enter your ${integration.name} API key`}
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none pr-10"
+                                  />
+                                  <button
+                                    onClick={() => setShowApiKey(prev => ({ ...prev, [integration.id]: !prev[integration.id] }))}
+                                    className="absolute right-2 top-1/2 -translate-y-1/2 p-1 text-gray-400 hover:text-gray-600"
+                                    aria-label={showApiKey[integration.id] ? 'Hide API key' : 'Show API key'}
+                                  >
+                                    {showApiKey[integration.id] ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                                  </button>
+                                </div>
+                              </div>
+                              <div>
+                                <label className="block text-sm font-medium text-gray-600 mb-1.5">
+                                  Webhook URL
+                                </label>
+                                <input
+                                  type="url"
+                                  value={config.webhookUrl}
+                                  onChange={(e) =>
+                                    setIntegrationConfigs(prev => ({
+                                      ...prev,
+                                      [integration.id]: { ...prev[integration.id], webhookUrl: e.target.value },
+                                    }))
+                                  }
+                                  placeholder="https://your-webhook-url.com/endpoint"
+                                  className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
+                                />
+                              </div>
+                              <div className="flex justify-end">
+                                <button
+                                  onClick={() => {
+                                    toast.success(`${integration.name} configuration saved!`)
+                                    setExpandedIntegration(null)
+                                  }}
+                                  className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 transition flex items-center gap-2"
+                                >
+                                  <Save className="w-4 h-4" />
+                                  Save Configuration
+                                </button>
+                              </div>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    )
+                  })}
                 </div>
-                
+
                 <div className="mt-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
                   <p className="text-sm text-blue-800">
-                    <strong>Coming Soon:</strong> More integrations are being developed. 
+                    <strong>Coming Soon:</strong> More integrations are being developed.
                     Contact support if you need a specific integration.
                   </p>
                 </div>
