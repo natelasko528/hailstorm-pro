@@ -3,7 +3,7 @@ import { useAuthStore } from '../store/authStore'
 import { useNavigate } from 'react-router-dom'
 import toast from 'react-hot-toast'
 import { CloudRain, Loader2, Check, X, AlertCircle, ArrowLeft, Mail } from 'lucide-react'
-import { supabase } from '../lib/supabase'
+import { supabase, isSupabaseConfigured } from '../lib/supabase'
 
 // Email validation regex
 const EMAIL_REGEX = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
@@ -126,6 +126,9 @@ export default function LoginPage() {
 
     setSendingResetEmail(true)
     try {
+      if (!isSupabaseConfigured) {
+        throw new Error('Supabase is not configured. Please set environment variables.')
+      }
       const { error } = await supabase.auth.resetPasswordForEmail(forgotPasswordEmail, {
         redirectTo: `${window.location.origin}/login?reset=true`,
       })
@@ -243,6 +246,20 @@ export default function LoginPage() {
           <h1 className="text-3xl font-bold text-gray-900">HailStorm Pro</h1>
           <p className="text-gray-600 mt-2">Automated Roofing Lead Generation</p>
         </div>
+
+        {!isSupabaseConfigured && (
+          <div className="mb-4 p-3 bg-amber-50 border border-amber-200 rounded-lg">
+            <div className="flex items-start gap-2">
+              <AlertCircle className="w-5 h-5 text-amber-600 mt-0.5 flex-shrink-0" />
+              <div>
+                <p className="text-sm font-medium text-amber-800">Backend not connected</p>
+                <p className="text-xs text-amber-700 mt-1">
+                  Supabase environment variables are missing. Set <code className="bg-amber-100 px-1 rounded">VITE_SUPABASE_URL</code> and <code className="bg-amber-100 px-1 rounded">VITE_SUPABASE_ANON_KEY</code> in your Vercel project settings under Environment Variables (enable for all environments: Production, Preview, Development).
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Google Sign In Button */}
         <button
