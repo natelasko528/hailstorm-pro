@@ -4,3 +4,14 @@ package-lock.json
 .env
 .env.local
 .env.production
+
+# Large database data (keep migrations/schema only)
+database/*.csv
+database/*.csv.gz
+database/*.zip
+database/hail_shapefiles/
+storm_paths_data.json
+database/batch_*.sql
+database/final_batch_*.sql
+database/small_batch_*.sql
+database/all_batches.txt
